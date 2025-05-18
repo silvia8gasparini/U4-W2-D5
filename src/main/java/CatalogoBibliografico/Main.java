@@ -42,21 +42,29 @@ public class Main {
     }
 
     private static void aggiungiLibro() {
-        System.out.print("ISBN: ");
-        String isbn = scanner.nextLine();
-        System.out.print("Titolo: ");
-        String titolo = scanner.nextLine();
-        System.out.print("Anno: ");
-        int anno = Integer.parseInt(scanner.nextLine());
-        System.out.print("Pagine: ");
-        int pagine = Integer.parseInt(scanner.nextLine());
-        System.out.print("Autore: ");
-        String autore = scanner.nextLine();
-        System.out.print("Genere: ");
-        String genere = scanner.nextLine();
+        try {
+            System.out.print("ISBN: ");
+            String isbn = scanner.nextLine();
+            System.out.print("Titolo: ");
+            String titolo = scanner.nextLine();
+            System.out.print("Anno: ");
+            int anno = Integer.parseInt(scanner.nextLine());
+            System.out.print("Pagine: ");
+            int pagine = Integer.parseInt(scanner.nextLine());
+            System.out.print("Autore: ");
+            String autore = scanner.nextLine();
+            System.out.print("Genere: ");
+            String genere = scanner.nextLine();
 
-        archivio.aggiungiLibro(new Libro(isbn, titolo, anno, pagine, autore, genere));
+            archivio.aggiungiLibro(new Libro(isbn, titolo, anno, pagine, autore, genere));
+            System.out.println("Libro aggiunto con successo!");
+        } catch (NumberFormatException e) {
+            System.out.println("Errore: anno o pagine non sono numeri validi.");
+        } catch (Exception e) {
+            System.out.println("Errore durante l'aggiunta del libro: " + e.getMessage());
+        }
     }
+
 
     private static void cercaIsbn() {
         System.out.print("Inserisci ISBN: ");
