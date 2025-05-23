@@ -4,48 +4,62 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Archivio {
-    private final Map<String, Libro> catalogo = new HashMap<>();
-    public void aggiungiLibro(Libro libro) {
-        if (catalogo.containsKey(libro.getIsbn())) {
-            System.out.println("Errore: ISBN giù presente.");
+    private final Map<String, ElementoCatalogo> catalogo = new HashMap<>();
+
+    public void aggiungiElemento(ElementoCatalogo elemento) {
+        if (catalogo.containsKey(elemento.getIsbn())) {
+            System.out.println("Errore: ISBN già presente.");
             return;
         }
-        catalogo.put(libro.getIsbn(), libro);
-    }
-    public Libro cercaPerIsbn(String isbn) {
-        return Optional.ofNullable(catalogo.get(isbn)).orElseThrow(() -> new LibroNonTrovato(isbn));
+        catalogo.put(elemento.getIsbn(), elemento);
     }
 
-    public void rimuoviLibro(String isbn) {
+    public ElementoCatalogo cercaPerIsbn(String isbn) {
+        return Optional.ofNullable(catalogo.get(isbn))
+                .orElseThrow(() -> new ElementoNonTrovato(isbn));
+    }
+
+    public void rimuoviElemento(String isbn) {
         if (catalogo.remove(isbn) == null) {
-            System.out.println("Nessun libro trovato con ISBN " + isbn);
+            System.out.println("Nessun elemento trovato con ISBN " + isbn);
         } else {
-            System.out.println("Libro rimosso con successo");
+            System.out.println("Elemento rimosso con successo");
         }
     }
 
-    public List<Libro> cercaPerAnno(int anno) {
-        return catalogo.values().stream().filter(l -> l.getAnnoPubblicazione() == anno).collect(Collectors.toList());
+    public List<ElementoCatalogo> cercaPerAnno(int anno) {
+        return catalogo.values().stream()
+                .filter(e -> e.getAnnoPubblicazione() == anno)
+                .collect(Collectors.toList());
     }
 
     public List<Libro> cercaPerAutore(String autore) {
-        return catalogo.values().stream().filter(l -> l.getAutore().equalsIgnoreCase(autore)).collect(Collectors.toList());
+        return catalogo.values().stream()
+                .filter(e -> e instanceof Libro)
+                .map(e -> (Libro) e)
+                .filter(l -> l.getAutore().equalsIgnoreCase(autore))
+                .collect(Collectors.toList());
     }
 
-    public void aggiornaLibro(String isbn, Libro nuovoLibro) {
+    public void aggiornaElemento(String isbn, ElementoCatalogo nuovoElemento) {
         if (!catalogo.containsKey(isbn)) {
-            throw new LibroNonTrovato(isbn);
+            throw new ElementoNonTrovato(isbn);
         }
-        catalogo.put(isbn, nuovoLibro);
-        System.out.println("Libro aggiornato");
+        catalogo.put(isbn, nuovoElemento);
+        System.out.println("Elemento aggiornato");
     }
 
     public void mostraStatistiche() {
-        System.out.println("Numero totale di libri: " + catalogo.size());
+        System.out.println("Numero totale di elementi: " + catalogo.size());
 
-        catalogo.values().stream().max(Comparator.comparingInt(Libro::getNumeroPagine)).ifPresent(l -> System.out.println("Libro con più pagine: " + l));
+        catalogo.values().stream()
+                .max(Comparator.comparingInt(ElementoCatalogo::getNumeroPagine))
+                .ifPresent(e -> System.out.println("Elemento con più pagine: " + e));
 
-        double media = catalogo.values().stream().mapToInt(Libro::getNumeroPagine).average().orElse(0);
+        double media = catalogo.values().stream()
+                .mapToInt(ElementoCatalogo::getNumeroPagine)
+                .average()
+                .orElse(0);
 
         System.out.printf("Media pagine: %.2f%n", media);
     }
